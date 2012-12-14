@@ -11,6 +11,17 @@ object convertRGBToInt {
     ((b & 0xFF) << 0); //blue
 }
 
+object arrayToImage {
+  def apply(mat: Array[Array[Int]]) = {
+    val image = new BufferedImage(mat.size, mat.head.size,
+      BufferedImage.TYPE_INT_ARGB);
+    for (i <- 0 until mat.length; j <- 0 until mat.length) {
+      image.setRGB(i, j, mat(i)(j))
+    }
+    image
+  }
+}
+
 class Window(width: Int, h: Int) {
 
   val frame = new javax.swing.JFrame();
@@ -19,7 +30,7 @@ class Window(width: Int, h: Int) {
   frame.setVisible(true);
 
   val image = new BufferedImage(width, h,
-    BufferedImage.TYPE_INT_RGB);
+    BufferedImage.TYPE_INT_ARGB);
 
   val picLabel = new JLabel(new ImageIcon(image))
   frame.add(picLabel)
@@ -29,6 +40,10 @@ class Window(width: Int, h: Int) {
       image.setRGB(i, j, mat(i)(j))
     }
     picLabel.setIcon(new ImageIcon(image))
+  }
+
+  def setImage(bi: BufferedImage) = {
+    picLabel.setIcon(new ImageIcon(bi))
   }
 
   def close {

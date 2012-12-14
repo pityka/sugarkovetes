@@ -4,6 +4,7 @@ profile
 project/target
 target/
 **/*.class
+*.png
 
 # xcode noise
 build/*

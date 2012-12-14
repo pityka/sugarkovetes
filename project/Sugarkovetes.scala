@@ -9,7 +9,7 @@ object SugarkovetesBuild extends Build {
     settings = Project.defaultSettings ++ Seq(
       name := "sugarkovetes",
       organization := "pityu",
-      version := "0.1-SNAPSHOT",
+      version := "1.0",
       scalaVersion := "2.9.2",
       // add other settings here
       libraryDependencies ++= Seq(
