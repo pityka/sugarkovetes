@@ -118,8 +118,8 @@ object Scene extends Sugarkovetes {
 
 object Proba1 extends App {
 
-  val w = 2000
-  val h = 2000
+  val w = 200
+  val h = 200
   val rekurzioszint = 6
 
   val szinektombje = Kepernyo.sugarkovetes(Scene, w, h, rekurzioszint)
