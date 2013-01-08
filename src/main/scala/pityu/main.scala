@@ -46,14 +46,14 @@ object Scene extends Sugarkovetes {
     spekularis = 0.1,
     spekularisN = 16)
 
-  val uveg = AnyagTulajdonsagok(szin = Szin(1, 1, 1),
+  val uveg = AnyagTulajdonsagok(szin = Szin(0, 1, 0),
     ambiens = 0.0,
-    reflektiv = 0.0,
+    reflektiv = 0.05,
     tores = 1.0, //Kr
     toresmutato = 1.1,
     emisszio = Szin(0, 0, 0.0),
     atlatszosag = 1.0,
-    diffuz = 0.0,
+    diffuz = 0.05,
     spekularis = 0.0,
     spekularisN = 16)
 
@@ -92,7 +92,7 @@ object Scene extends Sugarkovetes {
     new Sik(Vec3(0, -1, 0), Vec3(0, 1, 0), hatterFeher) ::
     new Sik(Vec3(0, 0, 1), Vec3(0, 0, -1), hatterZold) ::
     new Gomb(Vec3(0, 0.4, 0.5), 0.2, piros) ::
-    new Gomb(Vec3(0.8, 0.4, 0.6), 0.2, piros) ::
+    new Gomb(Vec3(0.8, 0.9, 0.6), 0.2, piros) ::
 
     Haromszog(lentjobbkozel, lentbalkozel, lentbaltavol, mattKek) ::
     Haromszog(lentjobbtavol, lentjobbkozel, lentbaltavol, mattKek) ::
@@ -118,8 +118,8 @@ object Scene extends Sugarkovetes {
 
 object Proba1 extends App {
 
-  val w = 200
-  val h = 200
+  val w = 400
+  val h = 400
   val rekurzioszint = 6
 
   val szinektombje = Kepernyo.sugarkovetes(Scene, w, h, rekurzioszint)

@@ -8,8 +8,12 @@ import scala.math.{ pow, cos, acos, sqrt, tan, Pi }
 
 /**
  * Sugarkoveteshez szukseges segedfuggvenyek.
+ *
  */
 object Seged {
+
+  val rendezes = scala.math.Ordering.Double.on((x: MetszesiEredmeny) => x.parameter)
+
   val Fekete = Szin(0, 0, 0)
 
   val Epsz = 0.00001
@@ -101,10 +105,18 @@ object Sugar {
   def apply(start: Vec3, i: Vec3) = new Sugar(start, i.normalize)
 }
 
-case class Szin(r: Double, g: Double, b: Double) {
+class Szin private (
+    var r: Double,
+    var g: Double,
+    var b: Double) {
   def *(that: Double) = Szin(that * r, that * g, that * b)
   def *(that: Szin) = Szin(r * that.r, g * that.g, b * that.b)
   def +(that: Szin) = Szin(r + that.r, g + that.g, b + that.b)
+  def hozzaad(that: Szin) {
+    r += that.r
+    g += that.g
+    b += that.b
+  }
   def /(that: Double) = this * (1 / that)
 
   /** [0,1] koze szoritja az erteket. */
@@ -113,6 +125,10 @@ case class Szin(r: Double, g: Double, b: Double) {
     if (g > 1.0) 1.0 else { if (g < 0.0) 0.0 else g },
     if (b > 1.0) 1.0 else { if (b < 0.0) 0.0 else b }
   )
+
+}
+object Szin {
+  def apply(r: Double, g: Double, b: Double) = new Szin(r, g, b)
 }
 
 case class FenyForras(hely: Vec3, szin: Szin)
@@ -177,10 +193,12 @@ trait Sugarkovetes {
     }
   }
 
-  private def sugarIndit(sugar: Sugar): List[MetszesiEredmeny] =
-    objektumok.map(_.metszesSugarral(sugar.halad(Epsz))).filter(_.isDefined).map(_.get)
+  private def sugarIndit(sugar: Sugar): List[MetszesiEredmeny] = {
+    val s2 = sugar.halad(Epsz)
+    objektumok.map(_.metszesSugarral(s2)).filter(_.isDefined).map(_.get)
+  }
 
-  private def legkozelebbi(l: List[MetszesiEredmeny]) = l.sortBy(_.parameter).headOption
+  private def legkozelebbi(l: List[MetszesiEredmeny]) = l.sorted(Seged.rendezes).headOption
 
   /** Egszerusitett illuminacios egyenlet. */
   private def EIE(pont: Vec3, normalis: Vec3, anyag: AnyagTulajdonsagok, nezopont: Vec3, szint: Int): Szin = {
@@ -196,7 +214,7 @@ trait Sugarkovetes {
           spekularisBRDF(pont, nezopont, normalis, feny, anyag.spekularis, anyag.spekularisN)) *
           inkoherensFeny(pont, feny) *
           ((feny.hely - pont).normalize dot normalis)
-      }.reduce(_ + _)
+      }.reduceLeft { (x, y) => y.hozzaad(x); y }
 
       val tukorirany = idealisTukorIrany(pont - nezopont, normalis)
       val tukor = legkozelebbi(sugarIndit(Sugar(pont, tukorirany))).map { metsz =>
@@ -276,9 +294,9 @@ case class Haromszog(a: Vec3, b: Vec3, c: Vec3, anyag: AnyagTulajdonsagok)
 
   lazy val sik = new Sik(a, normalis, anyag)
 
-  val el0 = b - a
-  val el1 = c - b
-  val el2 = a - c
+  lazy val el0 = b - a
+  lazy val el1 = c - b
+  lazy val el2 = a - c
 
   def metszesSugarral(sugar: Sugar): Option[MetszesiEredmeny] = {
     sik.metszesSugarral(sugar).filter { metsz =>
